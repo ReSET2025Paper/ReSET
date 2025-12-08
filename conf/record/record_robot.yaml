@@ -1,0 +1,14 @@
+defaults:
+  - _self_
+  - ../camera@camera: static_and_gripper
+  - ../task@task: pick_berry
+
+type: execution
+demo_name: NULL
+save_video: true
+save_path: /home/collab/Yinlong/EaseScene/robot_video/${task.task_name}/${type}
+
+hydra:
+  output_subdir: null 
+  run:
+    dir: .

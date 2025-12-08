@@ -1,0 +1,18 @@
+defaults:
+  - ../encoder@encoder: resnet
+
+_target_: policy.FlowPolicyNew
+name: FlowPolicy
+device: ${device}
+uncertainty_threshold: ${task.uncertainty_threshold}
+visualize_path: ${task.visualize_path}
+
+# open_loop: False
+# preset_path: ${task.action_preset_path}
+
+optimizer: 
+  _target_: torch.optim.AdamW
+  _partial_: true
+  lr: 1e-4
+  betas: [0.9, 0.95]
+

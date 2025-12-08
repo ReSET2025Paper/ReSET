@@ -1,0 +1,6 @@
+_target_: data.human_dataset.HumanDataset
+data_path: /projects/collab/Human2Robot/EaseScene/human_video/${task}
+window: -1  # 120 (-1 means all frames)
+sample_num: 17 # 12 - 1
+samplers_per_epoch: 1000
+# human dataset does not have video_specs attr as resizing is done in preprocess_track

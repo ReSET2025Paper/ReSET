@@ -1,0 +1,5 @@
+_target_: data.PresetDataset
+data_path: /projects/collab/Human2Robot/EaseScene/robot_video/playdata.pkl
+flow_length: 17
+video_specs: 
+  resize: [224, 224]

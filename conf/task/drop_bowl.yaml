@@ -1,0 +1,50 @@
+defaults:
+  - ../policy@preset_openloop_policy: PresetOpenloop
+  - ../policy@preset_policy: PresetPolicy
+  - ../policy@open_loop: OpenLoop
+
+task_name: drop_bowl
+video_specs: 
+  resize: [224, 224]
+shape_meta:
+  obs:
+    agent_pos: 
+      shape: [8]
+      type: low_dim
+    image:
+      shape: [3, 224, 224]
+      type: rgb
+    image_gripper:
+      shape: [3, 224, 224]
+      type: rgb
+  action:
+    shape: [8]
+    type: low_dim
+
+start_position: [-0.232867, -0.524729, 0.137301, -2.3478, 0.0455863, 1.85082, 0.640032]
+uncertainty_threshold: 7.0
+
+# models
+# flow_model_path: /home/collab/Yinlong/EaseScene/outputs/TemporalFlowDecoder/drop_bowl/38480_12-57-40
+flow_model_path: /home/collab/Yinlong/EaseScene/outputs/TemporalFlowDecoder/drop_bowl/51843_12-51-47
+uncertainty_model_path: /home/collab/Yinlong/EaseScene/outputs/LinearEstimator/drop_bowl/40832_15-02-05
+
+
+# data (if needed)
+preset_path: Null
+action_preset_path: /home/collab/Yinlong/EaseScene/robot_video/action_preset.pkl
+
+# open loop path (if needed)
+open_loop_path: Null
+
+# If no visualization is needed, set it to None
+# visualize_path: Null
+visualize_path: /home/collab/Yinlong/EaseScene/outputs/deploy/${task.task_name}/${now:%Y-%m-%d}/${now:%H-%M-%S}
+
+load_policy:
+  open_loop: ${task.open_loop}
+  preset_openloop: ${task.preset_openloop_policy}
+  # preset: ${task.preset_policy}
+  preset: /home/collab/Yinlong/EaseScene/outputs/PresetPolicy/44982_15-52-14
+  flow: /home/collab/Yinlong/EaseScene/outputs/FlowPolicy/51877_14-35-41
+  diffusion: /home/collab/Yinlong/EaseScene/outputs/DiffusionPolicy/drop_bowl/41023_23-14-05

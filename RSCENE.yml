@@ -1,0 +1,4 @@
+name: RSCENE
+channels:
+  - defaults
+prefix: /home/daiyinlong/.conda/envs/RSCENE

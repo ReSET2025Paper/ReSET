@@ -1,0 +1,52 @@
+_target_: policy.DiffusionPolicy
+name: DiffusionPolicy
+shape_meta: ${task.shape_meta} 
+device: ${device}
+
+horizon: ${horizon} # This should be equal to the dataset's sample_num
+n_obs_steps: 4
+n_action_steps: 8
+num_inference_steps: 20
+
+crop_shape: [224,224]
+obs_encoder_group_norm: True
+eval_fixed_crop: True
+
+n_layer: 8
+n_cond_layers: 0  # >0: use transformer encoder for cond, otherwise use MLP
+n_head: 4
+n_emb: 256
+p_drop_emb: 0.0
+p_drop_attn: 0.3
+causal_attn: False
+time_as_cond: True # if false, use BERT like encoder only arch, time as input
+obs_as_cond: True
+pred_action_steps_only: True 
+
+lr_scheduler: 
+  name: cosine
+  lr_warmup_steps: 500
+  len_dataloader: ${dataset.samplers_per_epoch}
+  num_epochs: ${epochs}
+  gradient_accumulate_every: 1
+
+noise_scheduler:
+  _target_: diffusers.schedulers.scheduling_ddim.DDIMScheduler
+  num_train_timesteps: 100
+  beta_start: 0.0001
+  beta_end: 0.02
+  beta_schedule: squaredcos_cap_v2
+  clip_sample: true
+  set_alpha_to_one: true
+  steps_offset: 0
+  prediction_type: epsilon
+
+optimizer:
+  _target_: torch.optim.AdamW
+  _partial_: true
+  lr: 1e-4
+  betas: [0.9, 0.95]
+transformer_weight_decay: 1e-3
+obs_encoder_weight_decay: 1e-6
+
+

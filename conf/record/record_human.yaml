@@ -1,0 +1,9 @@
+defaults:
+  - _self_
+  - ../camera@camera: default
+
+task_name: multi_task
+save_video: false
+multi_task: true
+save_path: /home/collab/Yinlong/EaseScene/human_video/${task_name}
+

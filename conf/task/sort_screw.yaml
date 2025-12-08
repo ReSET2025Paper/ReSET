@@ -1,0 +1,49 @@
+defaults:
+  - ../policy@preset_openloop_policy: PresetOpenloop
+  - ../policy@preset_policy: PresetPolicy
+  - ../policy@open_loop: OpenLoop
+
+task_name: sort_screw
+video_specs: 
+  resize: [224, 224]
+shape_meta:
+  obs:
+    agent_pos: 
+      shape: [8]
+      type: low_dim
+    image:
+      shape: [3, 224, 224]
+      type: rgb
+    image_gripper:
+      shape: [3, 224, 224]
+      type: rgb
+  action:
+    shape: [8]
+    type: low_dim
+
+start_position: [-0.232867, -0.524729, 0.137301, -2.3478, 0.0455863, 1.85082, 0.640032]
+middle_position: [-0.390587, -0.488552, 0.148258, -2.35474, 0.0455231, 1.85027, 2.09041]
+uncertainty_threshold: 3
+
+# models
+flow_model_path: /home/collab/Yinlong/EaseScene/outputs/TemporalFlowDecoder/sort_screw/51882_14-23-31
+uncertainty_model_path: /home/collab/Yinlong/EaseScene/outputs/LinearEstimator/sort_screw/48139_16-50-55
+
+# data (if needed)
+preset_path: Null
+action_preset_path: /home/collab/Yinlong/EaseScene/robot_video/action_preset.pkl
+
+# open loop path (if needed)
+open_loop_path: Null
+
+# If no visualization is needed, set it to None
+# visualize_path: Null
+visualize_path: /home/collab/Yinlong/EaseScene/outputs/deploy/${task.task_name}/${now:%Y-%m-%d}/${now:%H-%M-%S}
+
+load_policy:
+  open_loop: ${task.open_loop}
+  preset_openloop: ${task.preset_openloop_policy}
+  # preset: ${task.preset_policy}
+  preset: /home/collab/Yinlong/EaseScene/outputs/PresetPolicy/44981_10-35-08
+  flow: /home/collab/Yinlong/EaseScene/outputs/FlowPolicy/51877_14-35-41
+  diffusion: /home/collab/Yinlong/EaseScene/outputs/DiffusionPolicy/sort_screw/49531_17-05-15

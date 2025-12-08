@@ -1,0 +1,43 @@
+defaults:
+  - ../policy@correction_policy: PresetPolicy
+  - ../policy@policy: OpenLoop
+
+task_name: test
+video_specs: 
+  resize: [224, 224]
+shape_meta:
+  obs:
+    agent_pos: 
+      shape: [8]
+      type: low_dim
+    image:
+      shape: [3, 224, 224]
+      type: rgb
+    image_gripper:
+      shape: [3, 224, 224]
+      type: rgb
+  action:
+    shape: [8]
+    type: low_dim
+
+start_position: [0.00696276, -0.115297, -0.0509166, -2.28021, -0.0245604, 2.14151, 0.788509]
+uncertainty_threshold: 1.2
+
+# models
+flow_model_path: /home/collab/Yinlong/EaseScene/outputs/TemporalFlowDecoder/pull_bowl/3176332_16-17-08
+uncertainty_model_path: /home/collab/Yinlong/EaseScene/outputs/LinearEstimator/pull_bowl/35314_15-15-23
+
+# data (if needed)
+preset_path: /home/collab/Yinlong/EaseScene/robot_video/pull_bowl_new/correction
+
+# open loop path (if needed)
+open_loop_path: /home/collab/Yinlong/EaseScene/robot_video/pull_bowl_new/execution/demo_1.pkl
+
+# If no visualization is needed, set it to None
+visualize_path: Null
+# visualize_path: /home/collab/Yinlong/EaseScene/outputs/deploy/${task.task_name}/${now:%Y-%m-%d}/${now:%H-%M-%S}
+
+load_policy:
+  open_loop: ${task.policy}
+  preset_correction: ${task.correction_policy}
+  diffusion: /home/collab/Yinlong/EaseScene/outputs/DiffusionPolicy/pull_bowl/37551_11-24-18

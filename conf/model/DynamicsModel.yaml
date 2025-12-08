@@ -1,0 +1,17 @@
+_target_: model.DynamicsModel
+in_dim: 3
+model_dim: 768
+dec_blocks: 16
+num_heads: 16
+patch_size: 8
+device: ${device}
+
+optimizer:
+  _target_: torch.optim.AdamW
+  _partial_: true
+  lr: 1e-4 # 5e-6 # 1e-4
+  betas: [0.9, 0.999]
+  weight_decay: 1e-2
+  eps: 1e-8
+
+name: DynamicsModel

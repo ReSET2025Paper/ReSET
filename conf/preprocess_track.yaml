@@ -1,0 +1,15 @@
+grid_size: 20
+visualize: true
+task: drop_bowl
+# data_path: /projects/collab/Human2Robot/EaseScene/human_video/${task}
+data_path: /projects/collab/Human2Robot/EaseScene/robot_video/${task}/correction
+video_specs:
+  resize: [224,224]
+
+device: cuda:0
+tracker_checkpoint: /projects/collab/Human2Robot/co-tracker/checkpoints/scaled_online.pth
+
+hydra:
+  output_subdir: null
+  run:
+    dir: .

@@ -1,0 +1,15 @@
+defaults:
+  - _self_
+
+# task_name: drop_bowl
+# description: Pick up the toy carrot and drop it in the white bowl.
+# num_demos: 60
+# task_name: sort_screw
+# description: Pick up the screwdriver and place it between the scissors and the wrench. 
+# num_demos: 100
+task_name: pick_block
+description: Pick up the green lego block.
+num_demos: 40
+data_path: /projects/collab/Human2Robot/EaseScene/robot_video/${task_name}/execution
+video_specs:
+  resize: [224,224]

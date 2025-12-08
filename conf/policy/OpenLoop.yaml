@@ -1,0 +1,3 @@
+_target_: policy.OpenLoop
+device: ${device}
+action_path: ${task.open_loop_path}

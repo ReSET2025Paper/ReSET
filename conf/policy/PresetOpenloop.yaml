@@ -1,0 +1,6 @@
+_target_: policy.PresetOpenloopPolicy
+device: ${device}
+uncertainty_threshold: ${task.uncertainty_threshold}
+visualize_path: ${task.visualize_path}
+
+preset_path: ${task.preset_path}

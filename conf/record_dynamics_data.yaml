@@ -1,0 +1,22 @@
+defaults:
+  - _self_
+  - robot: Franka
+  - camera: static_and_gripper
+  - task: drop_bowl
+  - policy: MPPIPolicy
+
+demo_name: NULL
+device: cuda
+# dynamics_model_path: /projects/collab/Human2Robot/EaseScene/outputs/DynamicsModel/daiyinlong/sort_screw/2025-08-08/58323_15-36-16
+dynamics_model_path: /home/collab/Yinlong/EaseScene/outputs/DynamicsModel/59682_18-07-08
+type: augmented
+save_video: true
+save_path: /home/collab/Yinlong/EaseScene/robot_video/${task.task_name}/${type}
+
+control_mode: v
+video_specs: ${task.video_specs}
+
+hydra:
+  output_subdir: null 
+  run:
+    dir: .

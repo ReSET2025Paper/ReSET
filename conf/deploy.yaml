@@ -1,0 +1,18 @@
+defaults:
+  - _self_
+  - robot: Franka
+  - camera: static_and_gripper
+  - task: drop_bowl
+policy:
+  correction_policy: preset
+  base_policy: diffusion #open_loop
+
+device: cuda
+control_mode: v
+action_scale: 10 #19.5 # 4.8 if skip sampling
+video_specs: ${task.video_specs} # This should be identical to the one in preprocess_track
+
+hydra:
+  output_subdir: null 
+  run:
+    dir: .

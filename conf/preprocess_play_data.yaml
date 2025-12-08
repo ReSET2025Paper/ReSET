@@ -1,0 +1,19 @@
+defaults: 
+  - _self_
+  - robot: Franka
+
+task: pick_berry
+playdata_type: robot # robot, preset
+human_data_path: /projects/collab/Human2Robot/EaseScene/human_video/${task}
+robot_data_path: /projects/collab/Human2Robot/EaseScene/robot_video/${task}/correction
+
+save_path: /projects/collab/Human2Robot/EaseScene/robot_video/${task}
+
+output_dir: outputs/play_data/${task}
+
+hydra:
+  run:
+    dir: ${output_dir}
+  sweep:
+    dir: .
+    subdir: . 

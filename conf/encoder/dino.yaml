@@ -1,0 +1,2 @@
+_target_: model.dinov2_encoder.dinov2_vitb14_reg
+pretrained: true

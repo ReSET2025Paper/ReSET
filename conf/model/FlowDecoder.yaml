@@ -1,0 +1,49 @@
+_target_: model.FlowDecoder
+in_dim: 768
+out_dim: 2
+pred_timestep: ${dataset.sample_num}
+model_dim: 768
+num_blocks: 16
+num_heads: 16
+patch_size: 5
+
+
+# optimizer
+optimizer :
+  _target_: torch.optim.AdamW
+  _partial_: true
+  lr: 1e-4 # 5e-6 # 1e-4
+  betas: [0.9, 0.999]
+  weight_decay: 1e-2
+  eps: 1e-8
+
+# scheduler
+
+schedulers:
+  - _target_: torch.optim.lr_scheduler.LinearLR
+    _partial_: true
+    start_factor: 1e-3
+    total_iters: 100  # warmup for 100 epochs
+  - _target_: torch.optim.lr_scheduler.CosineAnnealingLR
+    _partial_: true
+    T_max: 5000 #${epochs}
+    eta_min: 1e-6 #1e-8 # 1e-6
+  # - _target_: torch.optim.lr_scheduler.CyclicLR
+  #   _partial_: true
+  #   base_lr: 1e-7
+  #   max_lr: 5e-5
+  #   step_size_up: 1000
+  #   mode: triangular2
+  #   cycle_momentum: false
+  # - _target_: torch.optim.lr_scheduler.PolynomialLR
+  #   _partial_: true
+  #   total_iters: 1000
+  #   power: 0.5
+  # - _target_: torch.optim.lr_scheduler.StepLR
+  #   _partial_: true
+  #   step_size: 500
+  #   gamma: 0.5
+milestones: [100]
+
+
+name: TemporalFlowDecoder

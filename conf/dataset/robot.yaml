@@ -1,0 +1,5 @@
+_target_: data.RobotDataset
+data_path: /projects/collab/Human2Robot/EaseScene/robot_video/${task.task_name}/${robot_data_type}
+sample_num: ${horizon}
+samplers_per_epoch: ${epoch_size}
+video_specs: ${task.video_specs}

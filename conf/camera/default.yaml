@@ -1,0 +1,6 @@
+static:
+  _target_: utils.camera
+  cam_id: 0
+  visualize: true
+
+# camera input is BGR

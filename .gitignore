@@ -1,0 +1,17 @@
+outputs/
+saved_videos/
+human_video_old/
+robot_video_old/
+robot_video/
+human_video/
+deploy.log
+test_pipeline.log
+preprocess_play_data.log
+preprocess_track.log
+log_file.txt
+__pycache__
+data/__pycache__
+model/__pycache__
+*.pyc
+tmp/
+.vscode/settings.json

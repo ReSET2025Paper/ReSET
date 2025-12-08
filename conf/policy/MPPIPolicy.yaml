@@ -1,0 +1,7 @@
+_target_: policy.MPPIPolicy
+name: MPPIPolicy
+device: ${device}
+dynamics_model_path: ${dynamics_model_path}
+# play_data_path: ${task.action_preset_path}
+# play_data_path: /projects/collab/Human2Robot/EaseScene/robot_video/playdata.pkl
+play_data_path: /home/collab/Yinlong/EaseScene/robot_video/playdata.pkl

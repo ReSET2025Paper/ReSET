@@ -1,0 +1,4 @@
+_target_: policy.PI0
+name: PI0
+device: ${device}
+prompt: ${task.pi0_prompt}

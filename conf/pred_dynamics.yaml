@@ -1,0 +1,31 @@
+defaults:
+  - _self_
+  - model: DynamicsModel
+  - dataset: dynamics  # robot, preset, robot_play
+  - task: sort_screw # pick_berry, sort_screw, drop_bowl
+
+robot_data_type: execution
+horizon: 12
+
+# train: 
+device: cuda
+distributed: false
+epochs: 600
+batch_size: 16
+epoch_size: 400
+num_workers: 8
+
+# eval
+eval_interval: 10
+save_interval: 50
+
+user_name: ??? 
+job_id: ???
+output_dir: outputs/${model.name}/${user_name}/${task.task_name}/${now:%Y-%m-%d}/${job_id}_${now:%H-%M-%S}
+
+hydra:
+  run:
+    dir: ${output_dir}
+  sweep:
+    dir: .
+    subdir: . 

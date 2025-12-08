@@ -1,0 +1,34 @@
+defaults:
+  - _self_
+  - dataset: human
+  - model: FlowDecoder
+
+task: drop_bowl
+
+# train
+device: cuda
+distributed: false
+epochs: 600
+batch_size: 32
+num_workers: 8
+clip_grad_norm: NULL # 1.0
+
+# eval
+eval_subset_size: 10
+eval_interval: 10
+eval_visualize_dir: flow_vis
+save_interval: 50
+
+max_flow: 1.0 # placeholder
+min_flow: 0.0 # placeholder
+
+user_name: ???
+job_id: ???
+output_dir: outputs/${model.name}/${user_name}/${task}/${now:%Y-%m-%d}/${job_id}_${now:%H-%M-%S}
+
+hydra:
+  run:
+    dir: ${output_dir}
+  sweep:
+    dir: .
+    subdir: . 
