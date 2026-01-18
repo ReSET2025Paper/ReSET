@@ -72,7 +72,6 @@ class PI0(Policy):
               **kwags) -> None:
     super(PI0, self).__init__(**kwags)
     # This should be connecting to the server after running 'uv run scripts/serve_policy.py'
-    # Also run 'ssh -J daiyinlong@falcon1.arc.vt.edu -N -L 8000:10.128.38.49:8000 daiyinlong@{node}' to forward the port
     # Also run 'ssh -J {user_name}@{server_address} -N -L 8000:{ip}:8000 {user_name}@{node}' to forward the port
     self.uri = f"ws://127.0.0.1:8000"
     self._reconnect = True
@@ -80,13 +79,11 @@ class PI0(Policy):
     self.prompt = prompt
     self.action_buffer = []
 
-    # ---- NEW: shared state for background inference ----
     self._latest_obs = None
     self._obs_lock = threading.Lock()
     self._obs_event = threading.Event()
     self._act_lock = threading.Lock()
     self._loop_thread = None
-    # ----------------------------------------------------
 
     try:
         self._loop = asyncio.get_event_loop()
@@ -100,16 +97,13 @@ class PI0(Policy):
     # self._ws = self._loop.run_until_complete(self._connect_and_handshake())
     # print(colored("[PI0] ", "green") + f"Connected to policy server at {self.uri}")
 
-    # ---- CHANGED: run loop in background thread and start inferer ----
     self._start_loop_thread()                   # NEW
     fut = asyncio.run_coroutine_threadsafe(self._connect_and_handshake(), self._loop)
     self._ws = fut.result()
     print(colored("[PI0] ", "green") + f"Connected to policy server at {self.uri}")
     # kick off background inference forever
     asyncio.run_coroutine_threadsafe(self._infer_forever(), self._loop)  # NEW
-    # -----------------------------------------------------------------
 
-  # ---- NEW: spin the event loop in a daemon thread ----
   def _start_loop_thread(self):
     if self._loop.is_running():
         return
@@ -118,7 +112,6 @@ class PI0(Policy):
         self._loop.run_forever()
     self._loop_thread = threading.Thread(target=_runner, daemon=True)
     self._loop_thread.start()
-  # -----------------------------------------------------
 
   async def _connect_and_handshake(self):
     ws = await asyncio.wait_for(
@@ -155,8 +148,7 @@ class PI0(Policy):
     print(f"actions:{actions.shape}")
     print(resp["server_timing"])
     return actions
-
-  # ---- NEW: background loop that always uses newest obs and flushes buffer ----
+  
   import time
 
   async def _infer_forever(self):
@@ -229,7 +221,7 @@ class PI0(Policy):
     self._obs_event.set()
 
     # serve from buffer; if empty, wait a tiny bit for fresh result (optional)
-    for _ in range(2):  # small, bounded wait (~2ms total if loop tick is 1ms)
+    for _ in range(2):  # ~2ms total if loop tick is 1ms
       with self._act_lock:
         if self.action_buffer:
           action = self.action_buffer.pop(0)
