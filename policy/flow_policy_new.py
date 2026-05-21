@@ -19,11 +19,6 @@ class FlowPolicyNew(CorrectionPolicy):
                  optimizer: torch.optim.Optimizer = None,
                  **kwargs) -> None:
         super(FlowPolicyNew, self).__init__(**kwargs)
-        # self.flow_proj = nn.Sequential(
-        #     nn.Linear(2 * (flow_steps - 1) * flow_shape[0] // 2 * flow_shape[1] // 2, 256), # -1 for relative flow
-        #     nn.ReLU(),
-        #     nn.Linear(256, token_dim)
-        # )
         self.flow_proj = nn.Sequential(
             nn.Linear(3 * (flow_steps - 1), 256),  # 3 * (flow_steps - 1)
             nn.ReLU(),
@@ -106,8 +101,7 @@ class FlowPolicyNew(CorrectionPolicy):
         self.action_map[interaction_spec['type']](interaction_spec)
         return np.zeros(8), True # Return true to go home
 
-    def predict_action(self, obs: dict, gt_preset: dict = None) -> dict:
-        # ========= 0) 取输入并基础检查 =========
+    def predict_action(self, obs: dict, gt_preset: dict | None = None) -> dict:
         flow = obs['flow']
         img = obs['img']
 
@@ -123,37 +117,28 @@ class FlowPolicyNew(CorrectionPolicy):
         b, c, t, h, w = flow.shape
         assert (h, w, c) == (20, 20, 2), "Expected input shape (b, 2, t, 20, 20)"
 
-        # ========= 1) 预处理：稳噪&方向优先的 flow token =========
-        # 归一化到可控量级
-        flow = flow / 200.0  # [像素]到较小范围
+        flow = flow / 200.0 
 
-        # (a) 方向/幅值分解：方向更稳定（你说“方向应相似”）
         # flow_vec: (b, 2, t, h, w)
         eps = 1e-6
-        speed = np.sqrt((flow[:, 0] ** 2 + flow[:, 1] ** 2))                       # (b, t, h, w)
-        unit_x = flow[:, 0] / (speed + eps)                                        # (b, t, h, w)
+        speed = np.sqrt((flow[:, 0] ** 2 + flow[:, 1] ** 2)) # (b, t, h, w)
+        unit_x = flow[:, 0] / (speed + eps) # (b, t, h, w)
         unit_y = flow[:, 1] / (speed + eps)
-        log_speed = np.log(speed + eps)                                            # 强度用对数更稳
+        log_speed = np.log(speed + eps)                                            
 
-        # 把 (unit_x, unit_y, log_speed) 拼一起作为 3 通道，再做 2x2 patch
-        flow_feat = np.stack([unit_x, unit_y, log_speed], axis=1)                  # (b, 3, t, h, w)
+        flow_feat = np.stack([unit_x, unit_y, log_speed], axis=1) # (b, 3, t, h, w)
 
-        # 粗池化抑噪 + token 化（2x2）
         flow_patches = einops.rearrange(
             flow_feat, 'b c t (ph p1) (pw p2) -> b (ph pw) c t p1 p2', ph=2, pw=2
         )  # (b, 4, 3, t, 2, 2)
 
-        # 先做小区域平均，进一步抑噪
-        flow_patches = flow_patches.mean(axis=(-1, -2))                            # (b, 4, 3, t)
+        flow_patches = flow_patches.mean(axis=(-1, -2)) # (b, 4, 3, t)
 
-        # 拉平为 token 输入
-        flow_flat = einops.rearrange(flow_patches, 'b n c t -> b n (c t)')         # (b, 4, 3*t)
+        flow_flat = einops.rearrange(flow_patches, 'b n c t -> b n (c t)') # (b, 4, 3*t)
         flow_tokens = self.flow_proj(torch.tensor(flow_flat, device=self.device).float())  # (b, 4, token_dim)
 
-        # ========= 2) 图像编码：避免 squeeze 掉 batch =========
         img_t = torch.tensor(img, device=self.device).float() / 255.0
         enc = self.encoder(img_t)
-        # enc 可能是 (b, C, H', W') 或 (b, C, 1, 1) 或 (b, C)
         if enc.dim() == 4:
             encoder_feat = enc.mean(dim=(2, 3))     # GAP -> (b, C)
         elif enc.dim() == 2:
@@ -162,11 +147,9 @@ class FlowPolicyNew(CorrectionPolicy):
             encoder_feat = enc.view(enc.size(0), -1)
         img_tokens = self.img_proj(encoder_feat).unsqueeze(1)  # (b, 1, token_dim)
 
-        # ========= 3) 模态 Dropout（训练时更依赖 flow）=========
         if self.training and torch.rand(1, device=self.device).item() < 0.5:
             img_tokens = torch.zeros_like(img_tokens)
 
-        # ========= 4) 主前向：flow + image + action token =========
         action_token = self.action_token.repeat(b, 1, 1)  # (b, 1, token_dim)
         tokens = torch.cat([flow_tokens, img_tokens, action_token], dim=1)  # (b, 4+1+1, d)
         pred_tokens = self.transformer(tokens)
@@ -174,8 +157,6 @@ class FlowPolicyNew(CorrectionPolicy):
         action = self.action_projector(z)                  # (b, 7)
         type_logits = self.type_projector(z)               # (b, 3)
 
-        # ========= 5) flow-only 辅助前向：强制从 flow 学 =========
-        # 用同一 transformer，但把 img token 置零，做第二次前向，产生辅助监督
         tokens_flow_only = torch.cat([flow_tokens,
                                     torch.zeros_like(img_tokens),
                                     action_token], dim=1)
@@ -184,10 +165,8 @@ class FlowPolicyNew(CorrectionPolicy):
         action_flow = self.action_projector(z_flow)        # (b, 7)
         type_logits_flow = self.type_projector(z_flow)     # (b, 3)
 
-        # ========= 6) 计算损失（含修正）=========
         loss = mse = cross_entropy = None
         if gt_preset is not None:
-            # --- 动作 GT ---
             gt_action = np.concatenate((
                 np.array(gt_preset['start_state']),
                 np.array(gt_preset['end_state']),
@@ -213,31 +192,25 @@ class FlowPolicyNew(CorrectionPolicy):
                 # assume it’s already indices shape (B,)
                 gt_type_tensor = tgt.long()
 
-            # 主损失
             mse = nn.functional.mse_loss(action, gt_action_tensor)
             cross_entropy = nn.functional.cross_entropy(type_logits, gt_type_tensor)
 
-            # flow-only 辅助损失（逼模型从 flow 分支学）
             mse_aux = nn.functional.mse_loss(action_flow, gt_action_tensor)
             ce_aux = nn.functional.cross_entropy(type_logits_flow, gt_type_tensor)
 
-            # 方向对齐（主分支 + 浅权重）：让预测位移方向与 GT 对齐（小数据稳）
             start = torch.tensor(gt_preset['start_state'], dtype=torch.float32, device=self.device)
             end   = torch.tensor(gt_preset['end_state'],   dtype=torch.float32, device=self.device)
             delta = (end - start)                                   # (b, 3)
             u_gt = delta / (delta.norm(dim=1, keepdim=True) + 1e-6)
 
-            # 从 action 里取预测位移并归一
             u_pred = (action[:, 3:6] - action[:, :3])
             u_pred = u_pred / (u_pred.norm(dim=1, keepdim=True) + 1e-6)
             L_dir = 1.0 - (u_pred * u_gt).sum(dim=1).mean()
 
-            # rotation 用圆周损失更稳（可选，沿用原 7 维 MSE 也行）
             theta_pred = action[:, -1]
             theta_gt   = gt_action_tensor[:, -1]
             L_rot = 1.0 - torch.cos(theta_pred - theta_gt).mean()
 
-            # 权重（可调）
             w_mse, w_ce = 5.0, 1.0
             w_aux_mse, w_aux_ce = 0.5, 0.5
             w_dir, w_rot = 0.5, 0.5
@@ -246,7 +219,6 @@ class FlowPolicyNew(CorrectionPolicy):
                     + w_aux_mse * mse_aux + w_aux_ce * ce_aux
                     + w_dir * L_dir + w_rot * L_rot)
 
-        # 保证形状
         if action.dim() == 1:
             action = action.unsqueeze(0)
 
