@@ -1,3 +1,24 @@
+"""
+This script processes raw robot and human demonstration pickle files by computing dense optical flow tracking via CoTracker.
+
+Input Data Structure Formats:
+
+1. Human Raw Data (*.pkl) - Recorded by record/record_human.py
+   - A pickled dictionary containing:
+     - 'observations': List[np.ndarray] or np.ndarray, representing video sequence(s) of shape (T, H, W, 3)
+     - 'text_cond' (optional): str, language instruction prompt to be encoded using sentence-transformers
+
+2. Robot Raw Data (*.pkl) - Recorded by record/record_robot.py
+   - A pickled dictionary containing:
+     - 'img': List[np.ndarray] or np.ndarray, representing video sequence of shape (T, H, W, 3)
+     - 'img_gripper': List[np.ndarray] or np.ndarray, representing gripper camera video of shape (T, H, W, 3)
+     - 'joint_vel': np.ndarray of joint velocities
+     - 'joint_state': np.ndarray of robot joint positions of shape (T, 7)
+     - 'type' (optional): str, interaction category (one of ["pull", "pick", "rotate"])
+
+Output:
+Saves processed data with calculated CoTracker optical flow trajectories into corresponding '*_tracking.pkl' files.
+"""
 import os
 import time
 import hydra
@@ -71,7 +92,7 @@ def main(cfg: DictConfig) -> None:
     # Load co-tracker model
     # tracker = CoTrackerOnlinePredictor(checkpoint=cfg.tracker_checkpoint).to(cfg.device)
     # print(colored("[Tracker] ", "green") + f"Loaded tracker model from {cfg.tracker_checkpoint}")
-    tracker = torch.hub.load("facebookresearch/co-tracker", "cotracker3_offline").to(cfg.device)
+    tracker = torch.hub.load("facebookresearch/co-tracker", "cotracker3_offline", checkpoint=cfg.tracker_checkpoint).to(cfg.device)
     
     text_encoder = AutoModel.from_pretrained("sentence-transformers/all-MiniLM-L6-v2")
     tokenizer = AutoTokenizer.from_pretrained("sentence-transformers/all-MiniLM-L6-v2")
@@ -110,9 +131,9 @@ def main(cfg: DictConfig) -> None:
                     outputs = text_encoder(**inputs).last_hidden_state[:, 0, :]
                     saved_data['text_cond'] = outputs   
                 
-            # with open(os.path.join(cfg.data_path, file.replace('.pkl', '_tracking.pkl')), 'wb') as f:
-            #     pickle.dump(saved_data, f)
-            # print(colored("[Processing] ", "green") + f"Tracking data saved to {file.replace('.pkl', '_tracking.pkl')}")
+            with open(os.path.join(cfg.data_path, file.replace('.pkl', '_tracking.pkl')), 'wb') as f:
+                pickle.dump(saved_data, f)
+            print(colored("[Processing] ", "green") + f"Tracking data saved to {file.replace('.pkl', '_tracking.pkl')}")
 
         if 'joint_vel' in data: # robot dataset
             demo = data['img'] 
@@ -134,9 +155,9 @@ def main(cfg: DictConfig) -> None:
                 'tracking': pred_tracks
             }
 
-            # with open(os.path.join(cfg.data_path, file.replace('.pkl', '_tracking.pkl')), 'wb') as f:
-            #     pickle.dump(saved_data, f)
-            # print(colored("[Processing] ", "green") + f"Tracking data saved to {file.replace('.pkl', '_tracking.pkl')}")
+            with open(os.path.join(cfg.data_path, file.replace('.pkl', '_tracking.pkl')), 'wb') as f:
+                pickle.dump(saved_data, f)
+            print(colored("[Processing] ", "green") + f"Tracking data saved to {file.replace('.pkl', '_tracking.pkl')}")
 
 if __name__ == "__main__":
     main()

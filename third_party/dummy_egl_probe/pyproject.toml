@@ -1,0 +1,10 @@
+[project]
+name = "egl-probe"
+version = "1.0.2"
+description = "Dummy egl-probe package to bypass native cmake compilation"
+requires-python = ">=3.11"
+dependencies = []
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

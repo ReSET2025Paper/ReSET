@@ -1,0 +1,40 @@
+[project]
+name = "reset-robotics"
+version = "0.1.0"
+description = "Robust Imitation Learning via Uncertainty-Aware Vision-Dynamics Tracking & Control"
+readme = "README.md"
+requires-python = ">=3.11, <3.12"
+dependencies = [
+    "numpy",
+    "torch",
+    "torchvision",
+    "scipy",
+    "einops",
+    "termcolor",
+    "h5py",
+    "tqdm",
+    "natsort",
+    "pillow",
+    "hydra-core",
+    "omegaconf",
+    "pyyaml",
+    "wandb",
+    "transformers",
+    "pygame",
+    "imageio",
+    "opencv-python",
+    "matplotlib",
+    "diffusers",
+    "msgpack",
+    "websockets",
+    "dynamixel-sdk",
+    "robomimic @ git+https://github.com/ARISE-Initiative/robomimic.git",
+    "gello @ git+https://github.com/wuphilipp/gello_software.git",
+    "cotracker @ git+https://github.com/facebookresearch/co-tracker.git",
+]
+
+[tool.uv]
+package = false
+override-dependencies = [
+    "egl-probe @ file:///projects/collab/Yinlong/ReSET/third_party/dummy_egl_probe"
+]

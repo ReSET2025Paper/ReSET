@@ -188,16 +188,6 @@ class Gello():
                 action[index] = action[index] + (2 * np.pi)
 
             joints = obs["joint_positions"]
-            # if (action[:-1] - joints[:-1] > 1.0).any():
-            #     print("Action is too big")
-
-            #     # print which joints are too big
-            #     joint_index = np.where(action - joints > 1.5)
-            #     for j in joint_index:
-            #         print(
-            #             f"Joint [{j}], leader: {action[j]}, follower: {joints[j]}, diff: {action[j] - joints[j]}"
-            #         )
-            #     exit()
 
             self.obs = self.env.step(action)
             self.obs["joint_velocities"] = self.obs["joint_positions"] - prev_joint_pos

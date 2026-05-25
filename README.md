@@ -1,0 +1,103 @@
+# Prepare Before You Act: Learning From Humans to Rearrange Initial States
+
+[[arXiv](https://arxiv.org/abs/2509.18043)] [[Project Website](https://reset2025paper.github.io)]
+
+> **ReSET** combines human videos and teleoperation data to predict simplifying actions to handle out-of-distribution environments by first rearranging initial scenes back into the training distribution. 
+
+## Setup Instructions
+
+### 1. Installation & Environment Synchronization
+Clone the repository and synchronize the dependencies:
+```bash
+git clone https://github.com/ReSET2025Paper/ReSET.git ReSET
+cd ReSET
+
+uv sync
+```
+
+### 2. Download Pretrained CoTracker3 Checkpoints  [[repo](https://github.com/facebookresearch/co-tracker.git)]
+Create the `checkpoints` directory at the project root and download the CoTracker3 checkpoints:
+```bash
+mkdir -p checkpoints
+cd checkpoints
+
+# Download online model
+wget https://huggingface.co/facebook/cotracker3/resolve/main/scaled_online.pth
+
+# Download offline model
+wget https://huggingface.co/facebook/cotracker3/resolve/main/scaled_offline.pth
+
+cd ..
+```
+
+## Pipeline Execution
+
+### 1. Data Collection
+Record human videos or robot play demonstrations:
+* **Collect Human Correction Videos**:
+  ```bash
+  uv run record/record_human.py task=[task_name] multi_task=false
+  ```
+* **Collect Robot Correction Play Data**:
+  ```bash
+  uv run record/record_robot.py task=[task_name] type=correction
+  ```
+  *(Saves raw correction demonstration pickled `.pkl` datasets into the configured `./robot_video/[task_name]/correction` folder).*
+* **Collect Robot Teleoperation Demos (Non-Correction / Execution)**:
+  ```bash
+  uv run record/record_robot.py task=[task_name] type=execution
+  ```
+  *(Saves raw execution demonstration pickled `.pkl` datasets into the configured `./robot_video/[task_name]/execution` folder).*
+
+### 2. Track Preprocessing (Flow Generation)
+Compute dense optical flow trajectories using the offline CoTracker model:
+```bash
+uv run preprocess/preprocess_track.py task=[task_name] data_path=./human_video/[task_name] 
+
+# or
+
+uv run python preprocess/preprocess_track.py task=[task_name] data_path=./robot_video/[task_name]/correction 
+```
+*(Processes the raw human/robot demonstration files in `[task_name]/correction/` and outputs corresponding `*_tracking.pkl` files).*
+
+### 3. Play Data Preprocessing
+* **Preprocess and Align (preset mode)**:
+  ```bash
+  uv run preprocess_play_data.py task=[task_name] playdata_type=preset
+  ```
+* **Preprocess Robot Playdata**:
+  ```bash
+  uv run preprocess_play_data.py task=[task_name] playdata_type=robot
+  ```
+* **Combine/Aggregate All Tasks**:
+  ```bash
+  uv run preprocess_play_data.py task=all playdata_type=robot
+  uv run preprocess_play_data.py task=all playdata_type=preset
+  ```
+
+
+## Policy Training & Deployment
+
+You can run training and evaluation scripts using `uv run`:
+* **Train Policies**:
+  ```bash
+  uv run train_policy.py --config-name=train_policy task=[task_name] policy=FlowPolicy
+  ```
+* **Evaluate Policy Deployment**:
+  ```bash
+  uv run deploy.py --config-name=deploy task=[task_name]
+  ```
+
+## Citation
+
+If you find this work userful, please consider citing:
+
+```bibtex
+@article{dai2025prepare,
+  title={Prepare before you act: Learning from humans to rearrange initial states},
+  author={Dai, Yinlong and Keyser, Andre and Losey, Dylan P},
+  journal={arXiv preprint arXiv:2509.18043},
+  year={2025}
+}
+```
+
