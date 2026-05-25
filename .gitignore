@@ -15,3 +15,4 @@ model/__pycache__
 *.pyc
 tmp/
 .vscode/settings.json
+train.sh
