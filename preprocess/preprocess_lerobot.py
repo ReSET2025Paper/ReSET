@@ -24,10 +24,8 @@ from lerobot.common.datasets.lerobot_dataset import LeRobotDataset
 @hydra.main(version_base="1.1", config_path="../conf", config_name="preprocess_lerobot")
 def main(cfg: DictConfig) -> None:
     output_path = HF_LEROBOT_HOME / f"{cfg.task_name}_{cfg.num_demos}"
-    # if output_path.exists():
-    #     shutil.rmtree(output_path)
     if output_path.exists():
-        shutil.rmtree(f"/home/daiyinlong/.cache/huggingface/lerobot/{cfg.task_name}_{cfg.num_demos}")
+        shutil.rmtree(f"[your_path_here]]/.cache/huggingface/lerobot/{cfg.task_name}_{cfg.num_demos}")
 
     # os.makedirs(output_path, exist_ok=True)
 

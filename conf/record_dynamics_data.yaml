@@ -7,7 +7,7 @@ defaults:
 
 demo_name: NULL
 device: cuda
-dynamics_model_path: /home/collab/Yinlong/EaseScene/outputs/DynamicsModel/59682_18-07-08
+dynamics_model_path: outputs/DynamicsModel/${your_dynamics_model_path}
 type: augmented
 save_video: true
 save_path: ./robot_video/${task.task_name}/${type}

@@ -43,7 +43,7 @@ cd ..
 ## Pipeline Execution
 
 ### 1. Data Collection
-Data collection scripts are stored under `record` folder. This implementation uses a Franka robot and webcams to record videos, see `FrankaResearch3` and `camera` class in `utils.py`. To record human videos or robot play demonstrations:
+Data collection scripts are stored under `record` folder. This implementation uses a Franka robot and webcams to record videos, see `FrankaResearch3` and `camera` class in `utils.py`. We use [GELLO](https://github.com/wuphilipp/gello_software.git) for robot teleoperation. To record human videos or robot play demonstrations:
 * **Collect Human Correction Videos**:
   ```bash
   uv run record/record_human.py task=[task_name] multi_task=false
@@ -87,12 +87,19 @@ uv run preprocess/preprocess_track.py task=[task_name] data_path=./robot_video/[
   uv run preprocess_play_data.py task=all playdata_type=preset
   ```
 
+<details>
+<summary>If you are using your own dataset</summary> 
+
+- Check the beginning of [preprocess/preprocess_track.py](preprocess/preprocess_track.py) and [preprocess_play_data.py](preprocess_play_data.py) for the expected dataset structure.
+
+</details>
+
 
 ## Policy Training & Deployment
 
 All main training and prediction scripts are organized under the `train/` directory. For dataset structure, please refer to comments at the beginning of each script. For multi-GPU (`torchrun`) and SLURM job execution templates, please refer directly to [train_example.sh](train_example.sh).
 
-### Primary Training Scripts
+### Training Scripts
 1. **Flow Prediction (`train/pred_track_vit.py`)**
    - Trains the flow prediction decoder (`FlowDecoder`) to estimate keypoint-wise 2D trajectory flows from initial observations.
 2. **Uncertainty Estimation (`train/pred_uncertainty.py`)**
@@ -105,6 +112,38 @@ Run evaluation and hardware deployment using the root deployment script:
 ```bash
 uv run python deploy.py --config-name=deploy task=[task_name]
 ```
+
+## Running the Baseline
+
+### Dynamics-DP [[Project](https://dynamics-dp.github.io)]
+We implement the method introduced in the original paper and extend it into a visual dynamics model for Model Predictive Path Integral (MPPI) Planning.
+
+**Step 1: Train the dynamics model**
+
+Train the video-prediction dynamics model on collected robot play data, refer to [train_example.sh](train_example.sh).
+The checkpoint will be saved to `outputs/DynamicsModel/[user_name]/[task_name]/[date]/[job_id]/`.
+
+**Step 2: Collect augmented data with MPPI policy**
+
+Use the trained dynamics model to run the MPPI policy on the real robot and record augmented demonstrations:
+```bash
+uv run python record_dynamics_data.py \
+    task=[task_name] \
+    dynamics_model_path=[path/to/dynamics/checkpoint]
+```
+Augmented data is saved to `./robot_video/[task_name]/augmented/`.
+
+**Step 3: Train diffusion policy**
+
+Train the diffusion policy using the augmented dataset collected above.
+
+---
+
+### Pi0 [[repo](https://github.com/Physical-Intelligence/openpi)]
+
+**Train:** Clone the repo, first build datasets and set training configurations according to [`policy/pi0_training_config.py`](policy/pi0_training_config.py), [preprocess the dataset into Lerobot format](src/pi0_baseline/preprocess_lerobot.py), then compute the normalization statistics. Follow the training scheme from official repository.
+
+**Test:** Serve policy under `openpi` directory, can be remotely: `uv run scripts/serve_policy.py policy:checkpoint --policy.config=ReSET --policy.dir=checkpoints/ReSET/my_experiment/20000` 
 
 ## Citation
 

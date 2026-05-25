@@ -72,62 +72,6 @@ def main(cfg: DictConfig) -> None:
         device = cfg.device,
     ).to(cfg.device)
 
-    # goal = mppi_policy.actions[3]
-    # start_state = goal[:3]
-    # end_state = goal[3:6]
-    # rotation = goal[6]
-
-    # step_time = 1/30
-    # start_time = time.time()
-    # idx = 0
-    # while True:
-    #     try:
-    #         curr_time = time.time()
-    #         if curr_time - start_time >= step_time:
-    #             start_time = curr_time
-                
-    #             obs = {}
-                
-    #             for key, cam in cameras.items():
-    #                 if key == "static_cam": 
-    #                     static_frame = cam.frame
-    #                     obs["image"] = preprocess_video(static_frame, specs=cfg.video_specs)
-    #                 else:
-    #                     gripper_frame = cam.frame
-    #                     obs["image_gripper"] = preprocess_video(gripper_frame, specs=cfg.video_specs)
-    #             robot_state = robot.readState(conn)
-    #             # obs['agent_pos'] = robot.readState(conn)
-    #             obs['agent_pos'] = robot_state
-    #             print(idx, robot_state["q"])
-    #             obs_buffer.add(obs)
-    #             obs = obs_buffer.get_buffer()
-
-
-    #             joint_state = obs["agent_pos"][-1]["q"]
-    #             curr_cart_state = robot.joint2pose(joint_state)[0]
-    #             # print("curr_cart_state: {}".format(curr_cart_state))
-    #             # print("curr_goal: {}".format(curr_goal))
-
-    #             dist = np.linalg.norm(curr_cart_state - start_state)   
-    #             # xdot = np.clip(curr_goal - curr_cart_state, -0.05, 0.05)
-    #             xdot = np.clip(start_state - curr_cart_state, -0.05, 0.05)
-    #             xdot = np.concatenate([xdot, np.zeros(3)]) # add rotation to be 0
-    #             action = robot.xdot2qdot(xdot, obs["agent_pos"][-1])
-    #             robot.send2robot(conn, action, cfg.control_mode)
-    #             idx +=1
-
-
-    #     except KeyboardInterrupt:
-    #         print("Recording stopped.")
-    #         stop_deploy(cameras, robot, conn, conn_gripper, START)
-    #         os.makedirs(cfg.save_path, exist_ok=True)
-    #         with open(f"{cfg.save_path}/{demo_name}.pkl", 'wb') as handle:
-    #             pickle.dump(trajectory, handle)
-    #         break
-    # for i in range(200):
-    #     print(i)
-    #     _ = robot.readState(conn)
-
     step_time = 1/30
     start_time = time.time()
     idx = 0
