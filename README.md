@@ -109,7 +109,7 @@ All main training and prediction scripts are organized under the `train/` direct
 Specify the path to your trained checkpoint in the `task.yaml` files located under [`conf/task`](conf/task).
 Run evaluation and hardware deployment using the root deployment script:
 ```bash
-uv run python deploy.py task=[task_name]
+uv run deploy.py task=[task_name]
 ```
 
 ## Running the Baseline
@@ -126,7 +126,7 @@ The checkpoint will be saved to `outputs/DynamicsModel/[user_name]/[task_name]/[
 
 Use the trained dynamics model to run the MPPI policy on the real robot and record augmented demonstrations:
 ```bash
-uv run python record_dynamics_data.py \
+uv run record_dynamics_data.py \
     task=[task_name] \
     dynamics_model_path=[path/to/dynamics/checkpoint]
 ```
