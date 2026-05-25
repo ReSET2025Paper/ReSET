@@ -41,7 +41,7 @@ cd ..
 ## Pipeline Execution
 
 ### 1. Data Collection
-Data collection scripts are stored under `record` folder. To record human videos or robot play demonstrations:
+Data collection scripts are stored under `record` folder. This implementation uses a Franka robot and webcams to record videos, see `FrankaResearch3` and `camera` class in `utils.py`. To record human videos or robot play demonstrations:
 * **Collect Human Correction Videos**:
   ```bash
   uv run record/record_human.py task=[task_name] multi_task=false

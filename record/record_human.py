@@ -1,8 +1,11 @@
+"""
+This script records human teleoperation correction demonstrations by capturing camera video frame sequences.
+It saves the recorded interventions and optional text descriptions as a pickled dictionary.
+"""
 import os
 import glob
 import time
 import hydra
-import torch
 import pickle
 import numpy as np
 from termcolor import colored
@@ -73,10 +76,6 @@ def main(cfg: DictConfig) -> None:
 
         
         record_human(cfg, demo_num, cam)
-        # demo_num += 1
-    # cam.done = True
-    # print(colored("Recording finished.", "green") + f"{demo_num} demos recorded.")
-    # return 
 
 if __name__ == "__main__":
     main()

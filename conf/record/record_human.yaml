@@ -5,5 +5,4 @@ defaults:
 task_name: multi_task
 save_video: false
 multi_task: true
-save_path: /home/collab/Yinlong/EaseScene/human_video/${task_name}
-
+save_path: ./human_video/${task_name}

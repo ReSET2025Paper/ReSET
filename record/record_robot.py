@@ -1,9 +1,11 @@
+"""
+This script records robot play and expert demonstrations using the GELLO teleoperation interface.
+It captures camera frames, gripper views, joint positions, velocities, and actions, and saves them as a pickled dictionary.
+"""
 import os
-import cv2
 import time
 import hydra
 import pickle
-import numpy as np
 from natsort import os_sorted
 from omegaconf import DictConfig, OmegaConf
 
