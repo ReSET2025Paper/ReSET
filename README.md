@@ -1,6 +1,14 @@
-# Prepare Before You Act: Learning From Humans to Rearrange Initial States
+<h1 align="center" style="font-size: 2.0em; font-weight: bold; margin-bottom: 0; border: none; border-bottom: none;">Prepare Before You Act: Learning From Humans to Rearrange Initial States</h1>
 
-[[arXiv](https://arxiv.org/abs/2509.18043)] [[Project Website](https://reset2025paper.github.io)]
+##### <p align="center"> [Yinlong Dai](https://yinlongdai.github.io/), [Andre Keyser](https://www.linkedin.com/in/andre-keyser-560090380/), [Dylan P. Losey](https://dylanlosey.com/)</p>
+##### <p align="center"> Collaborative Robotics Lab (Collab), Virginia Tech </p>
+
+#####
+<div align="center">
+    <a href="https://reset2025paper.github.io"><img src="https://img.shields.io/static/v1?label=Project%20Page&message=Website&color=blue"></a> &ensp;
+    <a href="https://arxiv.org/abs/2509.18043"><img src="https://img.shields.io/static/v1?label=Paper&message=Arxiv&color=red"></a> &ensp; 
+</div>
+
 
 > **ReSET** combines human videos and teleoperation data to predict simplifying actions to handle out-of-distribution environments by first rearranging initial scenes back into the training distribution. 
 
