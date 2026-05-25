@@ -240,19 +240,18 @@ class PresetDataset(Dataset):
 
 
 def main():
-    # data_path = "/projects/collab/Human2Robot/EaseScene/robot_video/pull_bowl/execution"
+    # data_path = "./robot_video/pull_bowl/execution"
     # dataset = RobotInterventionDataset(data_path=data_path, sample_num=10)
     # print(dataset.default_dict.keys())
     # for i in range(len(dataset)):
     #     item = dataset[i]
     #     print(f"Item {i}: {item['img'].shape}, {item['img_gripper'].shape}, {item['joint_state'].shape}, {item['joint_vel'].shape}, {item['gripper_action'].shape}")
 
-    data_path = "/projects/collab/Human2Robot/EaseScene/robot_video/pick_berry/playdata.pkl" 
+    data_path = "./robot_video/pick_berry/playdata.pkl" 
     dataset = PresetDataset(data_path=data_path, video_specs=[224,224])
     for i in range(len(dataset)):
         item = dataset[i]
         # print(f"Item {i}: {item['img'].shape}, {item['correction_specs']}")
-        input("************************************")
 
 if __name__ == "__main__":
     main()

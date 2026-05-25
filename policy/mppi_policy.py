@@ -377,7 +377,7 @@ class MPPIPlanner():
             prbar.close()
 
         # save images and rewards
-        save_path = "/home/collab/Yinlong/EaseScene/temp_video.mp4"
+        save_path = "./temp_video.mp4"
         visualize_video(np.array(output_list), save_path)
         # save rewards as a plot
         from matplotlib import pyplot as plt
@@ -385,7 +385,7 @@ class MPPIPlanner():
         plt.xlabel("Iteration")
         plt.ylabel("Reward")
         plt.title("Reward vs Iteration")
-        plt.savefig("/home/collab/Yinlong/EaseScene/temp_reward_plot.png")
+        plt.savefig("./temp_reward_plot.png")
         plt.close()
 
         # NOTE: This is just for debugging
@@ -395,7 +395,6 @@ class MPPIPlanner():
         end_state = action[3:6]
         rotation = action[6]
         type = np.argmax(action[7:])
-        # input("*************************************")
 
         return {"action": action,
                 "start_state": start_state,

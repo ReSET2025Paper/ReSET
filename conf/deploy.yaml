@@ -4,12 +4,12 @@ defaults:
   - camera: static_and_gripper
   - task: drop_bowl
 policy:
-  correction_policy: preset
+  correction_policy: flow
   base_policy: diffusion #open_loop
 
 device: cuda
 control_mode: v
-action_scale: 10 #19.5 # 4.8 if skip sampling
+action_scale: 10 # 4.8 if skip sampling
 video_specs: ${task.video_specs} # This should be identical to the one in preprocess_track
 
 hydra:

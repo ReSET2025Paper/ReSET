@@ -148,7 +148,7 @@ class PresetOpenloopPolicy(CorrectionPolicy):
             
 
 # def main():
-#     preset_path = '/projects/collab/Human2Robot/EaseScene/robot_video/pull_bowl/correction'
+#     preset_path = './robot_video/pull_bowl/correction'
 #     policy = PresetOpenloopPolicy(preset_path=preset_path, device='cuda:0',
 #                           uncertainty_threshold=0.5,)
 

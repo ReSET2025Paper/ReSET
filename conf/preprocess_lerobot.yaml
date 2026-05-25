@@ -10,6 +10,6 @@ defaults:
 task_name: pick_block
 description: Pick up the green lego block.
 num_demos: 40
-data_path: /projects/collab/Human2Robot/EaseScene/robot_video/${task_name}/execution
+data_path: ./robot_video/${task_name}/execution
 video_specs:
   resize: [224,224]

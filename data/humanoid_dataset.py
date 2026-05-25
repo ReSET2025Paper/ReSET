@@ -151,7 +151,7 @@ class HumanoidInterventionDataset(Dataset):
         return batch
     
 # def main():
-#     data_path = '/projects/collab/Human2Robot/EaseScene/robot_video/move_banana'
+#     data_path = './robot_video/move_banana'
 #     dataset = HumanoidInterventionDataset(data_path=data_path, sample_num=4, video_specs={'resize':[224, 224]})
 #     print(f"length: {len(dataset)}")
 #     for i in range(len(dataset)):

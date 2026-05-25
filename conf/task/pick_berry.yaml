@@ -25,25 +25,24 @@ start_position: [-0.232867, -0.524729, 0.137301, -2.3478, 0.0455863, 1.85082, 0.
 uncertainty_threshold: 3.0
 
 # models
-# flow_model_path: /home/collab/Yinlong/EaseScene/outputs/TemporalFlowDecoder/pick_berry/38458_11-59-57
-flow_model_path: /home/collab/Yinlong/EaseScene/outputs/TemporalFlowDecoder/pick_berry/51844_12-53-46
-uncertainty_model_path: /home/collab/Yinlong/EaseScene/outputs/LinearEstimator/pick_berry/40832_17-25-57
+flow_model_path: /path/to/your/outputs/TemporalFlowDecoder/pick_berry/[your_ckpt_dir]
+uncertainty_model_path: /path/to/your/outputs/LinearEstimator/pick_berry/[your_ckpt_dir]
 
 # data (if needed)
 preset_path: Null
-action_preset_path: /home/collab/Yinlong/EaseScene/robot_video/action_preset.pkl
+action_preset_path: /path/to/your/robot_video/action_preset.pkl
 
 # open loop path (if needed)
 open_loop_path: Null
 
 # If no visualization is needed, set it to None
 # visualize_path: Null
-visualize_path: /home/collab/Yinlong/EaseScene/outputs/deploy/${task.task_name}/${now:%Y-%m-%d}/${now:%H-%M-%S}
+visualize_path: outputs/deploy/${task.task_name}/${now:%Y-%m-%d}/${now:%H-%M-%S}
 
 load_policy:
   open_loop: ${task.open_loop}
   preset_openloop: ${task.preset_openloop_policy}
   # preset: ${task.preset_policy}
-  preset: /home/collab/Yinlong/EaseScene/outputs/PresetPolicy/44981_16-00-28
-  flow: /home/collab/Yinlong/EaseScene/outputs/FlowPolicy/51877_14-35-41
-  diffusion: /home/collab/Yinlong/EaseScene/outputs/DiffusionPolicy/pick_berry/40921_18-15-24
+  preset: /path/to/your/outputs/PresetPolicy/[your_ckpt_dir]
+  flow: /path/to/your/outputs/FlowPolicy/[your_ckpt_dir]
+  diffusion: /path/to/your/outputs/DiffusionPolicy/pick_berry/[your_ckpt_dir]

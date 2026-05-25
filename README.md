@@ -65,9 +65,7 @@ Preprocess scripts for generating flow with Cotracker and Lerobot dataset are lo
 Compute dense optical flow trajectories using the offline CoTracker model:
 ```bash
 uv run preprocess/preprocess_track.py task=[task_name] data_path=./human_video/[task_name] 
-
 # or
-
 uv run preprocess/preprocess_track.py task=[task_name] data_path=./robot_video/[task_name]/correction 
 ```
 *(Processes the raw human/robot demonstration files in `[task_name]/correction/` and outputs corresponding `*_tracking.pkl` files).*
@@ -108,9 +106,10 @@ All main training and prediction scripts are organized under the `train/` direct
    - Trains both correction and base policies. e.g., `FlowPolicy`, `DiffusionPolicy` or `PresetPolicy` (for ReSET Naive baseline).
 
 ### Evaluate Policy Deployment
+Specify the path to your trained checkpoint in the `task.yaml` files located under [`conf/task`](conf/task).
 Run evaluation and hardware deployment using the root deployment script:
 ```bash
-uv run python deploy.py --config-name=deploy task=[task_name]
+uv run python deploy.py task=[task_name]
 ```
 
 ## Running the Baseline

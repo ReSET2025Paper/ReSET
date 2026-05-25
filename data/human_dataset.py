@@ -247,13 +247,12 @@ class HumanDataset(Dataset):
 
 def main():
     dataset = InterventionDataset(
-        data_path="/projects/collab/Human2Robot/EaseScene/human_video/pick_berry",
+        data_path="./human_video/pick_berry",
         window = -1,
         sample_num = 17,
         relative=True)
     for i in range(len(dataset)):
         item = dataset[i]
-        input ("*****************************")
 
 if __name__ == "__main__":
     main()

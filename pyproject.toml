@@ -37,6 +37,6 @@ dependencies = [
 
 [tool.uv]
 package = false
-override-dependencies = [
-    "egl-probe @ file:///projects/collab/Yinlong/ReSET/third_party/dummy_egl_probe"
-]
+
+[tool.uv.sources]
+egl-probe = { path = "third_party/dummy_egl_probe" }
