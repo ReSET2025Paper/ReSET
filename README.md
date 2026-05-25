@@ -33,7 +33,7 @@ cd ..
 ## Pipeline Execution
 
 ### 1. Data Collection
-Record human videos or robot play demonstrations:
+Data collection scripts are stored under `record` folder. To record human videos or robot play demonstrations:
 * **Collect Human Correction Videos**:
   ```bash
   uv run record/record_human.py task=[task_name] multi_task=false
@@ -50,13 +50,15 @@ Record human videos or robot play demonstrations:
   *(Saves raw execution demonstration pickled `.pkl` datasets into the configured `./robot_video/[task_name]/execution` folder).*
 
 ### 2. Track Preprocessing (Flow Generation)
+Preprocess scripts for generating flow with Cotracker and Lerobot dataset are located under `preprocess`.
+
 Compute dense optical flow trajectories using the offline CoTracker model:
 ```bash
 uv run preprocess/preprocess_track.py task=[task_name] data_path=./human_video/[task_name] 
 
 # or
 
-uv run python preprocess/preprocess_track.py task=[task_name] data_path=./robot_video/[task_name]/correction 
+uv run preprocess/preprocess_track.py task=[task_name] data_path=./robot_video/[task_name]/correction 
 ```
 *(Processes the raw human/robot demonstration files in `[task_name]/correction/` and outputs corresponding `*_tracking.pkl` files).*
 
