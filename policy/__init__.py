@@ -2,7 +2,6 @@ from .policy import *
 from .preset_openloop import *
 from .preset_policy import *
 from .flow_policy import *
-from .flow_policy_new import *
 from .open_loop import *
 from .diffusion_policy import *
 from .mppi_policy import *

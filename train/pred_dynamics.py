@@ -1,12 +1,28 @@
-import os
+"""
+Summary: 
+    Trains the video-prediction dynamics model to predict future observation frames 
+    (goal images) given the current observation image and proposed robot actions. This is used solely for the Dynamics-DP baseline.
+Data Structure Requirements:
+    Expects a pickle file (e.g., 'playdata.pkl') containing a dictionary with:
+      - 'img': List of observation frames (shape: [H, W, C] each)
+      - 'goal_img': List of corresponding future goal frames (shape: [H, W, C] each)
+      - 'correction_specs' (or 'action'): Dictionary list containing (preprocessed via preprocess_play_data.py):
+          - 'start_state': Robot initial 3D pose coordinates (shape: [3])
+          - 'end_state': Robot target 3D pose coordinates (shape: [3])
+          - 'rotation': Robot rotation angle (float)
+"""
+
 import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import tqdm
 import copy
 import yaml
 import hydra
 import torch
 import wandb
-import einops 
+import einops
 import collections, functools, operator
 from termcolor import colored
 from omegaconf import DictConfig, OmegaConf
@@ -104,7 +120,7 @@ def eval(epoch: int,
          cfg: DictConfig,
          device: torch.device,
          model: torch.nn.Module,
-         dataloader: DataLoader = None) -> float:
+         dataloader: DataLoader | None = None) -> float:
     print(colored("[Eval] ", "green") + f"Evaluating epoch {epoch}...")
     model.eval()
     eval_loss = []
@@ -130,7 +146,7 @@ def eval(epoch: int,
     model.train()  
     return eval_loss
 
-@hydra.main(version_base="1.1", config_path="conf", config_name="pred_dynamics")
+@hydra.main(version_base="1.1", config_path="../conf", config_name="pred_dynamics")
 def main(cfg: DictConfig) -> None:
     # set_seed()
     if cfg.distributed:

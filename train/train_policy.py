@@ -1,6 +1,33 @@
+"""
+Summary: 
+    Trains a behavioral policy (e.g., FlowPolicy, DiffusionPolicy, PresetPolicy) to map visual 
+    observations and target action sequences directly to robot action parameters.
+Prerequisites: 
+    - For FlowPolicy, requires a pre-trained flow prediction model (FlowDecoder) 
+      to generate flow trajectories from initial observations at inference/deployment time.
+    - For DiffusionPolicy and PresetPolicy, trains directly on robot demonstrations/presets from scratch.
+Data Structure Requirements:
+    1. For FlowPolicy and PresetPolicy (Preset Dataset):
+       Expects a pickle file (e.g., 'playdata.pkl' or 'action_preset.pkl') containing:
+         - 'img': List of observation frames (shape: [H, W, C] each)
+         - 'flow' (only for FlowPolicy): Preprocessed keypoint tracking flows (shape: [T, N, 2] each)
+         - 'correction_specs': Dictionary list containing target actions (preprocessed via preprocess_play_data.py):
+             - 'type': Action mode (e.g., 'pick', 'pull', 'rotate')
+             - 'start_state': Robot initial 3D pose coordinates (shape: [3])
+             - 'end_state': Robot target 3D pose coordinates (shape: [3])
+             - 'rotation': Robot rotation angle (float)
+    2. For DiffusionPolicy (Robot Dataset):
+       Expects a directory of demonstration pickle files (e.g., 'robot_video/.../execution/*.pkl') where each file contains:
+         - 'img': List of observation frames (length T, shape [H, W, C] each)
+         - 'img_gripper': List of gripper observation frames (length T, shape [H, W, C] each)
+         - 'joint_state': List of robot end-effector positions / low-dim states (length T, shape [8] each)
+         - 'joint_vel': List of target actions / joint velocities (length T, shape [8] each)
+"""
 
-import os
 import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import tqdm
 import copy
 import yaml
@@ -127,7 +154,7 @@ def train(cfg: DictConfig, local_rank: int) -> None:
 def eval(epoch: int,
          device: torch.device,
          policy: torch.nn.Module,
-         dataloader: DataLoader = None) -> float:
+         dataloader: DataLoader | None = None) -> float:
     print(colored("[Eval] ", "green") + f"Evaluating epoch {epoch}...")
     policy.eval()
     eval_loss = []
@@ -142,7 +169,7 @@ def eval(epoch: int,
     policy.train()  
     return eval_loss
 
-@hydra.main(version_base="1.1", config_path="conf", config_name="train_policy")
+@hydra.main(version_base="1.1", config_path="../conf", config_name="train_policy")
 def main(cfg: DictConfig) -> None:
     # set_seed()
     if cfg.distributed:

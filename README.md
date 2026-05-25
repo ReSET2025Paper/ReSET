@@ -1,4 +1,6 @@
-<h1 align="center" style="font-size: 2.0em; font-weight: bold; margin-bottom: 0; border: none; border-bottom: none;">Prepare Before You Act: Learning From Humans to Rearrange Initial States</h1>
+<h1 align="center" style="font-size: 2.0em; font-weight: bold; margin-bottom: 0; border: none; border-bottom: none;">Prepare Before You Act: 
+
+Learning From Humans to Rearrange Initial States</h1>
 
 ##### <p align="center"> [Yinlong Dai](https://yinlongdai.github.io/), [Andre Keyser](https://www.linkedin.com/in/andre-keyser-560090380/), [Dylan P. Losey](https://dylanlosey.com/)</p>
 ##### <p align="center"> Collaborative Robotics Lab (Collab), Virginia Tech </p>
@@ -88,15 +90,21 @@ uv run preprocess/preprocess_track.py task=[task_name] data_path=./robot_video/[
 
 ## Policy Training & Deployment
 
-You can run training and evaluation scripts using `uv run`:
-* **Train Policies**:
-  ```bash
-  uv run train_policy.py --config-name=train_policy task=[task_name] policy=FlowPolicy
-  ```
-* **Evaluate Policy Deployment**:
-  ```bash
-  uv run deploy.py --config-name=deploy task=[task_name]
-  ```
+All main training and prediction scripts are organized under the `train/` directory. For dataset structure, please refer to comments at the beginning of each script. For multi-GPU (`torchrun`) and SLURM job execution templates, please refer directly to [train_example.sh](train_example.sh).
+
+### Primary Training Scripts
+1. **Flow Prediction (`train/pred_track_vit.py`)**
+   - Trains the flow prediction decoder (`FlowDecoder`) to estimate keypoint-wise 2D trajectory flows from initial observations.
+2. **Uncertainty Estimation (`train/pred_uncertainty.py`)**
+   - Trains the uncertainty network (`LinearEstimator`) using to predict intervention boundaries relative to human teleoperation thresholds.
+3. **Policy Training (`train/train_policy.py`)**
+   - Trains both correction and base policies. e.g., `FlowPolicy`, `DiffusionPolicy` or `PresetPolicy` (for ReSET Naive baseline).
+
+### Evaluate Policy Deployment
+Run evaluation and hardware deployment using the root deployment script:
+```bash
+uv run python deploy.py --config-name=deploy task=[task_name]
+```
 
 ## Citation
 

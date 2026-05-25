@@ -1,4 +1,20 @@
+"""
+Summary: 
+    Trains an uncertainty estimator (LinearEstimator) to predict observation-level 
+    intervention uncertainty values relative to human intervention thresholds.
+Prerequisites: 
+    - Pretrained ResNet50 or DINOv2 visual encoder to extract image embedding representations.
+Data Structure Requirements:
+    Expects preprocessed human tracking files ending in '_tracking.pkl' containing:
+      - 'observations': List of intervention video sequences (shape: [T, H, W, C] each)
+      - 'uncertainties' (or 'uncertainty'): Pre-calculated uncertainty decay values (shape: [T] each)
+      - 'text_cond': Text conditioning sentence embeddings (shape: [1, 384] tensor)
+"""
+
+import sys
 import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import tqdm
 import yaml
 import hydra
@@ -142,7 +158,7 @@ def eval(epoch: int,
     return eval_loss
 
 
-@hydra.main(version_base="1.1", config_path="conf", config_name="pred_uncertainty")
+@hydra.main(version_base="1.1", config_path="../conf", config_name="pred_uncertainty")
 def main(cfg: DictConfig) -> None:
     if cfg.distributed:
         local_rank = int(os.environ['LOCAL_RANK'])

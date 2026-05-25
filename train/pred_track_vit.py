@@ -1,5 +1,20 @@
-import os
+"""
+Summary: 
+    Trains the flow prediction decoder (FlowDecoder) using a ViT backbone (DINOv2) 
+    to predict keypoint-wise 2D pixel trajectory flows from initial observations.
+Prerequisites: 
+    - DINOv2 ('dinov2_vitb14_reg') loaded from PyTorch Hub as the visual feature encoder.
+Data Structure Requirements:
+    Expects preprocessed human tracking files ending in '_tracking.pkl' containing:
+      - 'observations': List of preprocessed video frames (shape: [T, H, W, C] each)
+      - 'tracking': List of keypoint-wise 2D coordinates tracked over time (shape: [T, N, 2] each)
+      - 'text_cond': Text conditioning sentence embeddings (shape: [1, 384] tensor)
+"""
+
 import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import tqdm
 import yaml
 import hydra
@@ -9,7 +24,6 @@ import collections, functools, operator
 from termcolor import colored
 from omegaconf import DictConfig, OmegaConf
 from torch.utils.data import DataLoader, Subset
-
 
 import torch.distributed as dist
 from torch.nn.parallel import DistributedDataParallel as DDP
@@ -135,9 +149,9 @@ def eval(epoch: int,
          min_flow: float,
          max_flow: float,
          model: torch.nn.Module,
-         encoder: torch.nn.Module = None,
-         dataloader: DataLoader = None,
-         visualize_dir: str = None,
+         encoder: torch.nn.Module | None = None,
+         dataloader: DataLoader | None = None,
+         visualize_dir: str | None = None,
 ) -> float:
     
     print(colored("[Eval] ", "green") + f"Evaluating epoch {epoch} ...")
@@ -183,9 +197,7 @@ def eval(epoch: int,
     model.train()
     return eval_loss
 
-
-
-@hydra.main(version_base="1.1", config_path="conf", config_name="pred_track_vit")
+@hydra.main(version_base="1.1", config_path="../conf", config_name="pred_track_vit")
 def main(cfg: DictConfig) -> None:
     # set_seed()
     if cfg.distributed:
@@ -203,4 +215,3 @@ if __name__ == "__main__":
         sys.argv.append("hydra.run.dir=null")
         sys.argv.append("hydra.output_subdir=null")
     main()
-

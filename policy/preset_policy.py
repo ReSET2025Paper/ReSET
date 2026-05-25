@@ -103,7 +103,9 @@ class PresetPolicy(CorrectionPolicy):
         assert obs.ndim == 4 and obs.shape[1] == 3, "Input observation has wrong shape!"
 
         obs = obs / 255 
-        encoder_feat = self.encoder(torch.tensor(obs).to(self.device)).squeeze()
+        encoder_feat = self.encoder(torch.tensor(obs).to(self.device))
+        if encoder_feat.ndim == 4:
+            encoder_feat = encoder_feat.squeeze(-1).squeeze(-1)
         action = self.action_projector(encoder_feat)
         type = self.type_projector(encoder_feat)
 
@@ -122,6 +124,8 @@ class PresetPolicy(CorrectionPolicy):
             mse = nn.functional.mse_loss(action, gt_action_tensor)
 
             gt_type_tensor = torch.tensor(gt_type, dtype=torch.float32, device=self.device)
+            if gt_type_tensor.dim() > 1 and gt_type_tensor.shape[-1] > 1:
+                gt_type_tensor = torch.argmax(gt_type_tensor, dim=-1)
             cross_entropy = nn.functional.cross_entropy(type, gt_type_tensor)
 
             loss = mse * 5 + cross_entropy

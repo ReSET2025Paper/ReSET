@@ -1,7 +1,7 @@
 defaults:
   - ../encoder@encoder: resnet
 
-_target_: policy.FlowPolicyNew
+_target_: policy.FlowPolicy
 name: FlowPolicy
 device: ${device}
 uncertainty_threshold: ${task.uncertainty_threshold}

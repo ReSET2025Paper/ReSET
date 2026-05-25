@@ -83,13 +83,13 @@ class CorrectionPolicy(Policy):
             
 
         
-    def init_robot(self, robot: FrankaResearch3 = None, conn = None, conn_gripper = None) -> None:
+    def init_robot(self, robot: FrankaResearch3 | None = None, conn = None, conn_gripper = None) -> None:
         self.robot = robot
         self.conn = conn
         self.conn_gripper = conn_gripper
 
         
-    def _get_flow_and_uncertainty(self, obs: np.array, text_cond: str = None):  # obs shape: (B, C, H, W), normalized
+    def _get_flow_and_uncertainty(self, obs: np.ndarray, text_cond: str | None = None):  # obs shape: (B, C, H, W), normalized
         try:
             assert obs.ndim == 4 and obs.shape[1] == 3
         except AssertionError as e:
